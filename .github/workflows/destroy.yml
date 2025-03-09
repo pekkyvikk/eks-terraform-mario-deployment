@@ -23,14 +23,22 @@ jobs:
         with:
           terraform_version: latest
 
-      - name: Terraform Init
-        run: |
-          cd Terraform
-          terraform init
+      - name: Initialize Terraform
+        working-directory: ./Terraform  # Ensure this is correct
+        run: terraform init -input=false
+
+      - name: Refresh Terraform State
+        working-directory: ./Terraform
+        run: terraform refresh
+
+      - name: Show Terraform State
+        working-directory: ./Terraform
+        run: terraform state list
 
       - name: Terraform Destroy (Approval Required)
+        working-directory: ./infra
         run: |
           echo "⚠️ About to destroy all resources!"
           echo "🛑 You must manually approve this action in GitHub UI."
-          sleep 10  # Give time to cancel if triggered by mistake
+          sleep 10
           terraform destroy -auto-approve
