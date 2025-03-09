@@ -28,6 +28,11 @@ output "eks_kubeconfig_command" {
   value       = "aws eks update-kubeconfig --region us-east-1 --name ${module.eks.eks_cluster_name}"
 }
 
+output "bastion_host" {
+  description = "bastion hos public ip for ssh"
+  value = module.bastion_host.associate_public_ip_address 
+  
+}
 
 
 
