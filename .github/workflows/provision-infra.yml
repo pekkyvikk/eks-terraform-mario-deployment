@@ -31,4 +31,11 @@ jobs:
 
       - name: Save Bastion Host IP
         run: |
-          echo "BASTION_IP=$(terraform output -raw bastion_public_ip)" >> $GITHUB_ENV
+          BASTION_IP=$(cd terraform && terraform output -raw bastion_public_ip || echo "FAILED")
+          if [ "$BASTION_IP" = "FAILED" ]; then
+           echo "Error: Failed to retrieve Bastion Host IP"
+           exit 1
+          fi
+          echo "BASTION_IP=$BASTION_IP" >> $GITHUB_ENV
+
+       
