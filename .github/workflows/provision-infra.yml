@@ -55,8 +55,8 @@ jobs:
           
 
           # Retrieve Bastion Host IP
-         BASTION_IP=$(terraform output -raw bastion_host 2>/dev/null || echo "")
-
+         #BASTION_IP=$(terraform output -raw bastion_host 2>/dev/null || echo "")
+         BASTION_IP=$(terraform output -raw bastion_host 2>/dev/null | tail -n 1 | tr -d '\r')
                   if [[ -z "$BASTION_IP" ]]; then
          echo "Error: Failed to retrieve Bastion Host IP"
          exit 1
