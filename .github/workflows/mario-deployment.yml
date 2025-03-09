@@ -13,7 +13,7 @@ jobs:
 
       - name:  Set Up Terraform  # ✅ FIXED: Ensures Terraform is available  
         uses:  hashicorp/setup-terraform@v2
-        
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -27,7 +27,8 @@ jobs:
           terraform init -no-color
           terraform refresh -no-color
           
-          BASTION_IP=$(terraform output -raw bastion_host 2>/dev/null | tr -d '\r')
+          
+          BASTION_IP=$(terraform output -raw bastion_host 2>/dev/null | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | head -n 1)
           if [[ -z "$BASTION_IP" ]]; then
             echo "❌ Error: Failed to retrieve Bastion Host IP"
             exit 1
