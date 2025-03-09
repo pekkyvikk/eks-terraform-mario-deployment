@@ -15,7 +15,7 @@ terraform {
     bucket = "eks-mario-backend"
     key = "mario/terraform.tfstate"
     encrypt = true
-    dynamodb_table = "terraform-lock"
+    dynamodb_table = "terraform-locks"
     region = "us-east-1"
 
     
