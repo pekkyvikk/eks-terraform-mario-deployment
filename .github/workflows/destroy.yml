@@ -36,7 +36,7 @@ jobs:
         run: terraform state list
 
       - name: Terraform Destroy (Approval Required)
-        working-directory: ./infra
+        working-directory: ./Terraform
         run: |
           echo "⚠️ About to destroy all resources!"
           echo "🛑 You must manually approve this action in GitHub UI."
