@@ -1,7 +1,7 @@
 name: Deploy Mario App
 
 on:
-  workflow_dispatch:  # Manual trigger required
+  workflow_dispatch:  # Manual trigger
 
 jobs:
   deploy:
@@ -18,18 +18,45 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Retrieve & Store Bastion Host IP
+        run: |
+          cd Terraform
+          terraform init -no-color
+          terraform refresh -no-color
+          
+          BASTION_IP=$(terraform output -raw bastion_host 2>/dev/null | tr -d '\r')
+          if [[ -z "$BASTION_IP" ]]; then
+            echo "❌ Error: Failed to retrieve Bastion Host IP"
+            exit 1
+          fi
+
+          echo "BASTION_IP=$BASTION_IP" >> $GITHUB_ENV
+          echo "✅ Bastion Host IP Retrieved: $BASTION_IP"
+
+      - name: Debug Bastion IP
+        run: |
+          echo "🔍 Checking stored Bastion IP..."
+          if [[ -z "${{ env.BASTION_IP }}" ]]; then
+            echo "❌ Error: Bastion IP is missing!"
+            exit 1
+          else
+            echo "✅ Bastion IP available: ${{ env.BASTION_IP }}"
+          fi
+
       - name: SSH into Bastion and Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ env.BASTION_IP }}  # Use the Bastion IP from the environment
-          username: ${{ secrets.BASTION_USER }}
+          host: ${{ env.BASTION_IP }}
+          username: ${{ secrets.BASTION_USER }}   # Ensure correct user (e.g., ec2-user)
           key: ${{ secrets.BASTION_SSH_KEY }}
           script: |
-            set -e  # Exit on failure
+            set -e  # Exit immediately if any command fails
 
+            echo "✅ Connected to Bastion Host"
+            
             # Install AWS CLI
             sudo apt update -y
-            sudo apt install -y unzip curl
+            sudo apt install -y unzip
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
@@ -41,10 +68,13 @@ jobs:
             sudo mv kubectl /usr/local/bin/
             kubectl version --client
 
-            # Configure kubectl to access EKS
+            # Configure kubectl for EKS
             aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
 
             # Deploy Mario app
             kubectl apply -f ~/k8s/
 
-            echo "Mario app deployed successfully!"
+            echo "✅ Mario app deployed successfully!"
+
+
+            
