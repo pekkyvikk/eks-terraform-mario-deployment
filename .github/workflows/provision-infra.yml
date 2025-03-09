@@ -32,7 +32,8 @@ jobs:
       - name: Save Bastion Host IP
         run: |
           cd Terraform    
-            terraform init -no-colorterraform refresh -no-color  # Ensure outputs are up-to-date
+            terraform init -no-color
+            terraform refresh -no-color  # Ensure outputs are up-to-date
 
           BASTION_IP=$(terraform output -json bastion_public_ip | jq -r '.' 2>/dev/null || echo "FAILED")
           if [[ "$BASTION_IP" == "FAILED" || -z "$BASTION_IP" ]]; then
