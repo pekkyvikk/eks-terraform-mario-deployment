@@ -35,7 +35,7 @@ jobs:
             terraform init -no-color
             terraform refresh -no-color  # Ensure outputs are up-to-date
 
-          BASTION_IP=$(terraform output -json bastion_public_ip | jq -r '.' 2>/dev/null || echo "FAILED")
+          BASTION_IP=$(terraform output -json bastion_host | jq -r '.' 2>/dev/null || echo "FAILED")
           if [[ "$BASTION_IP" == "FAILED" || -z "$BASTION_IP" ]]; then
            echo "Error: Failed to retrieve Bastion Host IP"
            exit 1
