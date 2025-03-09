@@ -66,6 +66,16 @@ jobs:
          echo "BASTION_IP=$BASTION_IP" >> $GITHUB_ENV
          echo "Bastion Host IP: $BASTION_IP"
 
-       
-
+      
     
+         - name: Debug Bastion IP
+         run: |
+           echo "Checking if BASTION_IP is set..."
+           echo "BASTION_IP=${{ env.BASTION_IP }}"
+           if [[ -z "${{ env.BASTION_IP }}" ]]; then
+             echo "❌ Error: Bastion IP is missing!"
+             exit 1
+           else
+             echo "✅ Bastion IP is available: ${{ env.BASTION_IP }}"
+           fi
+ 
