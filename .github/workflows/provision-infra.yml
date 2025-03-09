@@ -31,7 +31,8 @@ jobs:
 
       - name: Save Bastion Host IP
         run: |
-          BASTION_IP=$(cd terraform && terraform output -raw bastion_public_ip || echo "FAILED")
+          cd EKS-TERRAFORM-MARIO-DELOYMENT/TERRAFORM      
+          BASTION_IP=$(terraform output -raw bastion_public_ip || echo "FAILED")
           if [ "$BASTION_IP" = "FAILED" ]; then
            echo "Error: Failed to retrieve Bastion Host IP"
            exit 1
