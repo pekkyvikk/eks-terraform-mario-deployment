@@ -44,7 +44,7 @@ jobs:
          cd Terraform
 
          # Debug: Check Terraform files exist
-         ls - la
+         ls -la
 
          # Initialize  Terraform outputs
           terraform init -no-color || { echo "Terraform init failed!"; exit 1; } 
