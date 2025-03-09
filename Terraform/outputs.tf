@@ -30,7 +30,7 @@ output "eks_kubeconfig_command" {
 
 output "bastion_host" {
   description = "bastion hos public ip for ssh"
-  value = module.bastion_host.associate_public_ip_address 
+  value = module.bastion_host.public_ip
   
 }
 
