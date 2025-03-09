@@ -11,6 +11,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name:  Set Up Terraform  # ✅ FIXED: Ensures Terraform is available  
+        uses:  hashicorp/setup-terraform@v2
+        
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
