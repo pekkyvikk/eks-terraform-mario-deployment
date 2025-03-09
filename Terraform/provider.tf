@@ -25,7 +25,7 @@ terraform {
 
 provider "aws" {
   region  = var.aws_region
-  profile = "k8s-use"
+ # profile = "k8s-use"
 }
 
 provider "kubernetes" {
