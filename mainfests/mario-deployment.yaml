@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mario-deployment
+spec:  
+  replicas: 3  # This can be increased base on requirement
+  selector:
+    matchLabels:
+      app: mario
+  template:
+    metadata:
+      labels:
+        app: mario
+    spec:
+      containers:
+        - name: mario-container
+          image:  sevenajay/mario:latest # image to be pulled from docker hub
+          ports:
+            - containerPort: 80 # application to listen on this port

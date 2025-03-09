@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mario-app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx  # Ensure your Ingress Controller matches this
+  rules:
+  - host: aaad8387bbe28467c84e4a1412e13eba-1096839277.us-east-1.elb.amazonaws.com  # Replace with your actual domain or use an IP
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mario-service  # Name of your Kubernetes Service
+            port:
+              number: 80     # This should match the exposed 'port' in your Service definition
+
+
