@@ -85,8 +85,18 @@ jobs:
             aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
 
             # Deploy Mario app
-            # cd mainfests 
-            pwd
+            cd ~
+            if [ ! -d "eks-terraform-mario-deployment.git" ]; then
+
+              echo "Cloning repository..."
+              
+              git clone https://github.com/pekkyvikk/eks-terraform-mario-deployment.git
+            else
+              echo "Repository already exists, pulling latest changes..."
+
+              cd eks-terraform-mario-deployment.git && git pull origin main
+            
+            cd mainfests
             kubectl apply -f mario-deployment.yaml
             
 
