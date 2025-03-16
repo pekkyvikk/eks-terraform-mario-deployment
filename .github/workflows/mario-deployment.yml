@@ -90,10 +90,10 @@ jobs:
 
             if ! command -v git &> /dev/null; then
 
-              sudo yum install -y git || sudo apt update && sudo apt install -y git
+              sudo yum install -y git || sudo yum update && sudo yum install -y git
 
             fi
-              
+
             if [ ! -d "eks-terraform-mario-deployment.git" ]; then
 
               echo "Cloning repository..."
