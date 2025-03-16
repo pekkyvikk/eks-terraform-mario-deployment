@@ -94,7 +94,7 @@ jobs:
 
             fi
 
-            if [ ! -d "eks-terraform-mario-deployment.git" ]; then
+            if [ ! -d "eks-terraform-mario-deployment" ]; then
 
               echo "Cloning repository..."
 
@@ -102,9 +102,9 @@ jobs:
             else
               echo "Repository already exists, pulling latest changes..."
 
-              cd eks-terraform-mario-deployment.git && git pull origin main
+              cd ~/eks-mario-deployment/manifests && git pull origin main
             fi
-            cd /home/ec2-user/eks-terraform-mario-deployment/mainfests
+            cd ~/eks-mario-deployment/manifests
             kubectl apply -f mario-deployment.yaml
             
 
