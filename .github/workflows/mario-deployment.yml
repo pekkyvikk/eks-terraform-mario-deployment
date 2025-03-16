@@ -89,13 +89,13 @@ jobs:
             if [ ! -d "eks-terraform-mario-deployment.git" ]; then
 
               echo "Cloning repository..."
-              
+
               git clone https://github.com/pekkyvikk/eks-terraform-mario-deployment.git
             else
               echo "Repository already exists, pulling latest changes..."
 
               cd eks-terraform-mario-deployment.git && git pull origin main
-            
+            fi
             cd mainfests
             kubectl apply -f mario-deployment.yaml
             
