@@ -71,7 +71,9 @@ jobs:
               aws --version
             else
               echo "AWS CLI is already installed. Updating..."
-              sudo ./aws/install --update
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip -o awscliv2.zip
+              sudo ./aws/install --update || sudo ./aws/instal
             fi  
             # Install kubectl
             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
