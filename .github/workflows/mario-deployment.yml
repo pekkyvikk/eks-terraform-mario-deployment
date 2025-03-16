@@ -86,6 +86,7 @@ jobs:
 
             # Deploy Mario app
             # cd mainfests 
+            pwd
             kubectl apply -f mario-deployment.yaml
             
 
