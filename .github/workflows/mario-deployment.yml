@@ -59,14 +59,20 @@ jobs:
             echo "✅ Connected to Bastion Host"
             
             # Install AWS CLI
-            sudo yum update -y
-            sudo yum install -y unzip
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            
-            unzip -o awscliv2.zip  # <--- Prevents overwrite prompts
-            sudo ./aws/install
-            aws --version
-
+            echo "Checking AWS CLI installation..."
+            if ! command -v aws &> /dev/null; then
+              echo "AWS CLI not found. Installing..."
+              sudo yum update -y
+              sudo yum install -y unzip
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+           
+              unzip -o awscliv2.zip  # <--- Prevents overwrite prompts
+              sudo ./aws/install
+              aws --version
+            else
+              echo "AWS CLI is already installed. Updating..."
+              sudo ./aws/install --update
+            fi  
             # Install kubectl
             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
             chmod +x kubectl
