@@ -85,7 +85,7 @@ jobs:
             aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
 
             # Deploy Mario app
-            cd mainfests 
+            # cd mainfests 
             kubectl apply -f mario-deployment.yaml
             
 
