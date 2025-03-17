@@ -104,7 +104,7 @@ jobs:
 
               cd eks-terraform-mario-deployment && git pull origin main
             fi
-            cd eks-terraform-mario-deployment/mainfests
+            cd mainfests
             kubectl apply -f mario-deployment.yaml
             
 
