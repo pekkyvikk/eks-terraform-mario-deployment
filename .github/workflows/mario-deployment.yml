@@ -102,9 +102,9 @@ jobs:
             else
               echo "Repository already exists, pulling latest changes..."
 
-              cd ~/eks-mario-deployment/manifests && git pull origin main
+              cd eks-terraform-mario-deployment && git pull origin main
             fi
-            cd ~/eks-mario-deployment/manifests
+            cd eks-terraform-mario-deployment/mainfests
             kubectl apply -f mario-deployment.yaml
             
 
