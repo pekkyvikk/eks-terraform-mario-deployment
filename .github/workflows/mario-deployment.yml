@@ -116,7 +116,7 @@ jobs:
             fi
 
      
-            if ! kubectl get svc mario-app-service.yaml; then 
+            if ! kubectl get svc mario-service; then 
             kubectl apply -f mario-app-service.yaml
             else
             echo "Mario Service already exists, skipping..."
@@ -129,13 +129,19 @@ jobs:
             --for=condition=ready pod \
             --selector=app.kubernetes.io/name=ingress-nginx \
             --timeout=300s
-               
-            cd mainfests     # ✅ Get the ELB Endpoint and Replace in Ingress Manifest
-            sleep 30     # Give time for ELB assignment
-            ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-            sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" k8s/ingress.yaml
+            
+            cd mainfests      
+            ELB_ENDPOINT=""
+            while [[ -z "$ELB_ENDPOINT" ]]; do
+              echo "Waiting for ELB to be assigned..."
+              sleep 10
+              ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            done
+            echo "✅ ELB assigned: $ELB_ENDPOINT"
 
-            if ! kubectl get ingress; then
+            sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" ingress.yaml
+
+            if ! kubectl get ingress mario-app-ingress; then
             kubectl apply -f ingress.yaml
             else
             echo "ingress already exists, skipping..."
