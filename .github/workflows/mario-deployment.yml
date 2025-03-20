@@ -108,14 +108,12 @@ jobs:
               cd eks-terraform-mario-deployment && git pull origin main
             fi
             cd mainfests
-
-      - name:  Deploy Kubernetes Resources
-        run:  |
-          if ! kubectl get deployment mario-deployment; then
-          kubectl apply -f mario-deployment.yaml
-          else
-          echo " Mario Deployment already exists, skipping..."
-          fi
+           
+            if ! kubectl get deployment mario-deployment; then
+            kubectl apply -f mario-deployment.yaml
+            else
+            echo " Mario Deployment already exists, skipping..."
+            fi
 
       - name:  Deploy Kubernetes Service
         run:  |
