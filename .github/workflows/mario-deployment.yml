@@ -120,40 +120,26 @@ jobs:
             kubectl apply -f mario-app-service.yaml
             else
             echo "Mario Service already exists, skipping..."
-            fi      
-            
+            fi   
 
-         # ✅ Install NGINX Ingress Controller
-      - name: Install NGINX Ingress Controller
-        run: |
-          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
+            kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
 
-
-      # ✅ Wait for Ingress Controller to be Ready
-      - name: Wait for Ingress Controller
-        run: |
-          cd mainfests 
-          kubectl wait --namespace ingress-nginx \
+          
+            kubectl wait --namespace ingress-nginx \
             --for=condition=ready pod \
             --selector=app.kubernetes.io/name=ingress-nginx \
             --timeout=300s
+               
+            cd mainfests     # ✅ Get the ELB Endpoint and Replace in Ingress Manifest
+            sleep 30     # Give time for ELB assignment
+            ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" k8s/ingress.yaml
 
-       # ✅ Get the ELB Endpoint and Replace in Ingress Manifest
-      - name: Get ELB Endpoint and Update Ingress Manifest
-        run: |
-          cd mainfests 
-          sleep 30  # Give time for ELB assignment
-          ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-          sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" k8s/ingress.yaml
-
-      - name: Deploy Kubernetes Ingress
-        run: |
-          cd mainfests
-          if ! kubectl get ingress; then
-          kubectl apply -f ingress.yaml
-          else
-          echo "ingress already exists, skipping..."
-          fi
+            if ! kubectl get ingress; then
+            kubectl apply -f ingress.yaml
+            else
+            echo "ingress already exists, skipping..."
+            fi
             
             echo "✅ Mario app deployed and exposed successfully!"
 
