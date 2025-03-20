@@ -130,21 +130,25 @@ jobs:
             --selector=app.kubernetes.io/name=ingress-nginx \
             --timeout=300s
             
-            cd mainfests      
+            cd mainfests 
             ELB_ENDPOINT=""
             while [[ -z "$ELB_ENDPOINT" ]]; do
-              echo "Waiting for ELB to be assigned..."
-              sleep 10
-              ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+             sleep 10
+             ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+             echo "Checking ELB assignment..."
             done
+            
             echo "✅ ELB assigned: $ELB_ENDPOINT"
 
             sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" ingress.yaml
+            cat ingress.yaml | grep "$ELB_ENDPOINT"  # Debugging
 
             if ! kubectl get ingress mario-app-ingress; then
             kubectl apply -f ingress.yaml
             else
-            echo "ingress already exists, skipping..."
+            echo "Updating existing Ingress..."
+            kubectl apply -f ingress.yaml
+
             fi
             
             echo "✅ Mario app deployed and exposed successfully!"
