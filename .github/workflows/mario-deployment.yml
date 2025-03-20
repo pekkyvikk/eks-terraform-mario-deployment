@@ -107,12 +107,59 @@ jobs:
 
               cd eks-terraform-mario-deployment && git pull origin main
             fi
-            
             cd mainfests
-            kubectl apply -f mario-deployment.yaml
+
+      - name:  Deploy Kubernetes Resources
+        run:  |
+          if ! kubectl get deployment mario-deployment; then
+          kubectl apply -f mario-deployment.yaml
+          else
+          echo " Mario Deployment already exists, skipping..."
+          fi
+
+      - name:  Deploy Kubernetes Service
+        run:  |
+          if ! kubectl get svc mario-app-service.yaml; then
+          kubectl apply -f mario-app-service.yaml
+          else
+          echo "Mario Service already exists, skipping..."
+          fi      
             
 
-            echo "✅ Mario app deployed successfully!"
+         # ✅ Install NGINX Ingress Controller
+      - name: Install NGINX Ingress Controller
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/aws/deploy.yaml
+
+
+      # ✅ Wait for Ingress Controller to be Ready
+      - name: Wait for Ingress Controller
+        run: |
+          kubectl wait --namespace ingress-nginx \
+            --for=condition=ready pod \
+            --selector=app.kubernetes.io/name=ingress-nginx \
+            --timeout=300s
+
+       # ✅ Get the ELB Endpoint and Replace in Ingress Manifest
+      - name: Get ELB Endpoint and Update Ingress Manifest
+        run: |
+          sleep 30  # Give time for ELB assignment
+          ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" k8s/ingress.yaml
+
+      - name: Deploy Kubernetes Ingress
+        run: |
+          if ! kubectl get ingress; then
+          kubectl apply -f ingress.yaml
+          else
+          echo "ingress already exists, skipping..."
+          fi
+            
+            echo "✅ Mario app deployed and exposed successfully!"
+
+            
+
+
 
 
             
