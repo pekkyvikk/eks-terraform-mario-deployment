@@ -130,7 +130,7 @@ jobs:
             --selector=app.kubernetes.io/name=ingress-nginx \
             --timeout=300s
             
-            cd mainfests 
+            # cd mainfests 
             ELB_ENDPOINT=""
             while [[ -z "$ELB_ENDPOINT" ]]; do
              sleep 10
