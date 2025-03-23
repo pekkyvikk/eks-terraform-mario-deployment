@@ -131,16 +131,29 @@ jobs:
             --timeout=300s
             
             # cd mainfests 
+            
             ELB_ENDPOINT=""
+            echo "⏳ Waiting for ELB to be assigned..."
+
+            
             while [[ -z "$ELB_ENDPOINT" ]]; do
              sleep 10
              ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-             echo "Checking ELB assignment..."
+             
+              echo "Checking ELB assignment..."
             done
             
             echo "✅ ELB assigned: $ELB_ENDPOINT"
 
+            # Debugging: Check if ELB was retrieved correctly
+            if [ -z "$ELB_ENDPOINT" ]; then
+                 echo "❌ ERROR: ELB hostname could not be retrieved!"
+                 exit 1
+            fi
+              # Replace the ELB placeholder in ingress.yaml   
             sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" ingress.yaml
+            
+            Debugging: Confirm replacement worked
             cat ingress.yaml | grep "$ELB_ENDPOINT"  # Debugging
 
             if ! kubectl get ingress mario-app-ingress; then
