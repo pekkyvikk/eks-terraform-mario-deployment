@@ -59,15 +59,18 @@ This project exemplifies a scalable, secure, and automated Kubernetes deployment
 
 # eks-terraform-mario-deployment
 Step 1: Create your infrastructure codes with Terraform (Eks modules used is in this case)  and your .yaml manifest files for the app deployment, service and ingress, then push into your github accounts. Note the terraform code used here created about aws 45 resources  
-![alt text](image-1.png)
+ 
 
 STEP 2: Login to your github account and open the remote repo where just pushed the code in step 1, click on action to create the .gitHub uworkflow for  1. provision -infra.yaml, 2. marip-deployment.yaml and 3. desttroy.yaml for cleanup
-   ![alt text](image-2.png)
+  
 
 STEP 3: Copy and paste the automation codes which includes the steps for execution, ensure u set you creditentals and varibales by clicking on actions, settings the by left side of ur screen click on secrets and varibles. 
-    ![alt text](image-3.png)
+   
+SEPT 4: Commit any change to the remote repo to trigger the provisioning of the infrastructure 
 
-  SEPT 4: Commit any changes to the remote repo to trigger the provisioning of the infrastructure 
+STEP 5: Once the infrastructure is fully set up, manually trigger the deployment of the app. This deplys and exposes ur application. Your mario application can be  accessed on the browser though the elb endpoint. 
+
+STEP.6: Maually trigger the destroy.ymal workflow for cleanup. 
+
+
   
-  Note you  credential should set as repo varibales under secrets, also set your region here. 
-All varibles should be set, enviromental sorted out and set. ....
