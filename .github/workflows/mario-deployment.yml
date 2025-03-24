@@ -131,44 +131,31 @@ jobs:
             --timeout=300s
             
             # cd mainfests 
-            
+            # Wait for the ELB endpoint to be assigned
             ELB_ENDPOINT=""
-            echo "⏳ Waiting for ELB to be assigned..."
+            while [[ -z "$ELB_ENDPOINT" || "$ELB_ENDPOINT" == " " ]]; do
+                echo "⏳ Waiting for ELB to be assigned..."
+                sleep 20
+                ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+            done 
 
-            
-            while [[ -z "$ELB_ENDPOINT" ]]; do
-             sleep 10
-             ELB_ENDPOINT=$(kubectl get svc -n ingress-nginx ingress-nginx-controller -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
-             
-              echo "Checking ELB assignment..."
-            done
-            
             echo "✅ ELB assigned: $ELB_ENDPOINT"
 
-            # Debugging: Check if ELB was retrieved correctly
-            if [ -z "$ELB_ENDPOINT" ]; then
-                 echo "❌ ERROR: ELB hostname could not be retrieved!"
-                 exit 1
-            fi
-              # Replace the ELB placeholder in ingress.yaml   
-            sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" ingress.yaml
-            
-            Debugging: Confirm replacement worked
-            cat ingress.yaml | grep "$ELB_ENDPOINT"  # Debugging
+             # Check if Ingress already exists
+            if kubectl get ingress mario-app-ingress &>/dev/null; then
 
-            if ! kubectl get ingress mario-app-ingress; then
-            kubectl apply -f ingress.yaml
+                echo "Ingress resource found! Updating ELB endpoint..."
+                # Update the existing ingress resource with the new ELB endpoint
+
+                kubectl patch ingress mario-app-ingress --type='json' -p="[{'op': 'replace', 'path': '/spec/rules/0/host', 'value': \"$ELB_ENDPOINT\"}]"
+
             else
-            echo "Updating existing Ingress..."
-            kubectl apply -f ingress.yaml
+                echo "❌ Ingress resource not found! Applying the manifest..."
+                # Update the existing ingress resource with the new ELB endpoint
+                sed -i "s|{{ELB_ENDPOINT}}|$ELB_ENDPOINT|g" ingress.yaml
+                kubectl apply -f ingress.yaml
+            fi    
 
-            fi
+            echo "✅ Ingress deployment/update complete!"
             
-            echo "✅ Mario app deployed and exposed successfully!"
-
-            
-
-
-
-
             
